@@ -50,20 +50,16 @@ def save_session_to_db(analysis: AnalysisResult, video_name: str = "upload_01.mp
     session_id = session_res.data[0]['id']
 
     # 3. Insert the Timeline Events
-    # We loop through the Pydantic objects and convert them to the SQL format
     events_payload = []
     for event in analysis.timeline_events:
         events_payload.append({
             "session_id": session_id,
             
-            # --- TIMESTAMP MAPPING ---
             "timestamp_start": event.start_time,
             "timestamp_end":   event.end_time,
 
-            # --- TEXT MAPPING ---
             "overlay_text":    event.overlay_text,
             "correction_cue":  event.correction_cue, 
-            # --- SPELLING MAPPING (Canadian/British 'colour') ---
             "status_colour":   event.status_color
         })
     
@@ -74,4 +70,4 @@ def save_session_to_db(analysis: AnalysisResult, video_name: str = "upload_01.mp
     # 4. Update the User's overall profile
     sb.table("users").update({"skill_level": analysis.user_skill_level}).eq("id", user_id).execute()
 
-    print("[DB] ✅ Saved successfully to Supabase!")
+    print("[DB] Saved successfully to Supabase!")

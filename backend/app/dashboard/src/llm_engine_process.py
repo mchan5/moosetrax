@@ -10,16 +10,13 @@ current_file = Path(__file__).resolve()
 src_dir = current_file.parent  # .../src
 dashboard_dir = src_dir.parent # .../dashboard
 
-# 2. Construct the exact path to the .env file
-#    (.../backend/app/dashboard/.env)
 env_path = dashboard_dir / '.env'
 
-# 3. Load the file explicitly
+# Load the file explicitly
 load_dotenv(dotenv_path=env_path)
 
 load_dotenv()
 
-# 1. SETUP CLIENT
 if not os.getenv("GEMINI_API_KEY"):
     raise ValueError("GEMINI_API_KEY is missing from .env file")
 
@@ -40,12 +37,13 @@ ai_model = "gemini-2.5-flash"
 #     ),
 #     mode=instructor.Mode.JSON
 # )
+
 headers = {
     "Authorization": f"Bearer {os.getenv('DEEPSEEK_API_KEY')}",
     "Content-Type": "application/json" # Common for JSON payloads
 }
 
-# 2. DATA SCHEMAS
+# Data Schemas
 class RepetitionAnalysis(BaseModel):
     timestamp_start: float
     timestamp_end: float
@@ -64,7 +62,6 @@ class VideoAnalysis(BaseModel):
 # 3. GENERATION LOGIC
 def generate_rep_analysis_json(rep_summaries: list, cue_bank: list) -> VideoAnalysis:
     
-    # --- UPDATED PROMPT WITH CUE BANK ---
     prompt = f"""
     You are an expert Biomechanics AI Coach.
     I will provide raw data from a user's workout and a Bank of Coaching Cues.
@@ -97,7 +94,7 @@ def generate_rep_analysis_json(rep_summaries: list, cue_bank: list) -> VideoAnal
     {rep_summaries}
     """
 
-    print("   ... 🧠 Gemini is analyzing rep data & selecting cues...")
+    print("  Gemini is analyzing rep data & selecting cues...")
 
     response = client.chat.completions.create(
         model=ai_model, 

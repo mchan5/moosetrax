@@ -50,20 +50,16 @@ def save_session_to_db(analysis: AnalysisResult, video_name: str = "processed_vi
     Stores the full AI analysis in the 'analysis' JSONB column.
     """
     
-    # 1. Get User
+    # Get User
     user_id = get_or_create_user("demo_user")
     print(f"[DB] Saving session for user {user_id}...")
 
-    # 2. Convert Pydantic Object to Dict
-    # This creates the full JSON structure (timeline, cues, gamification, etc.)
+    # Convert Pydantic Object to Dict
     analysis_json = analysis.model_dump() 
     
-    # 3. Inject the video filename into the JSON so the frontend can find it
     # analysis_json["annotated_video_filename"] = video_name
 
-    # 4. Prepare the SQL Row
-    # We extract key stats for the SQL columns (for faster sorting/filtering)
-    # while keeping the rich data inside the JSONB column.
+    # Prepare the SQL Row
     session_payload = {
         "user_id": user_id,
         "form_score": analysis.gamification.form_score,
@@ -72,18 +68,17 @@ def save_session_to_db(analysis: AnalysisResult, video_name: str = "processed_vi
         # "annotated_video_filename": video_name
     }
 
-    # 5. Insert
     try:
         response = sb.table("workout_sessions").insert(session_payload).execute()
         
         if response.data:
             session_id = response.data[0]['session_id']
-            print(f"[DB] ✅ Session Saved! ID: {session_id}")
+            print(f"[DB] Session Saved! ID: {session_id}")
             return session_id
         else:
-            print("[DB] ❌ Insert failed: No data returned.")
+            print("[DB] Insert failed: No data returned.")
             return None
 
     except Exception as e:
-        print(f"[DB] ❌ Database Error: {e}")
+        print(f"[DB] Database Error: {e}")
         return None

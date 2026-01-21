@@ -7,7 +7,6 @@ from pathlib import Path
 
 script_dir = Path(__file__).resolve().parent
 
-# 2. The .env is in: .../backend/app/dashboard/ (.parent goes up one level)
 env_path = script_dir.parent / '.env'
 
 load_dotenv(dotenv_path=env_path)
