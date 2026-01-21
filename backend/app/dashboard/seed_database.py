@@ -7,7 +7,6 @@ from supabase import create_client, Client
 
 load_dotenv()
 
-# --- CONFIGURATION ---
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 
@@ -16,12 +15,10 @@ if not url or not key:
 
 supabase: Client = create_client(url, key)
 
-# The User ID you are using in your dashboard runner
+# Sample User ID
 USER_ID = "76f963f6-4a5b-4248-bbe2-69122852a87b"
 
-# --- THE MOCK DATA ---
-# This list represents a user improving over 5 days.
-# We map these simple values into your complex Schema structure below.
+# Sample data to test
 scenarios = [
     {
         "days_ago": 5,
@@ -114,8 +111,6 @@ def seed_data():
     print(f"🌱 Seeding Supabase for User: {USER_ID}...")
 
     for s in scenarios:
-        # 1. Construct the AnalysisResult JSON object
-        # This matches your Pydantic schema EXACTLY.
         analysis_json = {
             "user_skill_level": s["level"],
             "personalized_summary": s["summary"],
@@ -132,20 +127,20 @@ def seed_data():
             "timeline_events": [] 
         }
 
-        # 2. Construct the SQL Row
+        # Construct  SQL Row
         row = {
             "user_id": USER_ID,
             "created_at": (datetime.now() - timedelta(days=s["days_ago"])).isoformat(),
             "form_score": s["score"],
             "primary_fault": s["primary_fault"],
-            "analysis": analysis_json # <--- Dumping the JSON here
+            "analysis": analysis_json # Dumping JSON here
         }
 
         try:
             supabase.table("workout_sessions").insert(row).execute()
-            print(f"✅ Inserted: Score {s['score']} ({s['days_ago']} days ago)")
+            print(f"Inserted: Score {s['score']} ({s['days_ago']} days ago)")
         except Exception as e:
-            print(f"❌ Error inserting row: {e}")
+            print(f"Error inserting row: {e}")
 
 if __name__ == "__main__":
     seed_data()

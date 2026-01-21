@@ -18,7 +18,7 @@ def main ():
     
     report = generate_weekly_report(history_data) 
 
-    # 4. Output the Results
+    # Output results
     print("\n" + "="*60)
     print(f" LIVE DASHBOARD REPORT")
     print("="*60)
@@ -27,7 +27,7 @@ def main ():
     print(f" Best Workout: {report.best_workout_id}")
     print(f" AI Summary: {report.body_part_breakdown.core_analysis}")
 
-    # 5. Save for Frontend
+    # Save for Frontend
     dir_path = os.path.dirname(os.path.abspath(__file__))
     dashboard_path  = os.path.join(dir_path, "data", "weekly_dashboard.json")
     output_path = dashboard_path

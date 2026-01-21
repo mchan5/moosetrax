@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Literal
 
-# --- 1. Basic Analysis Schemas ---
+# Basic Analysis Schemas ---
 
 class RemedialExercise(BaseModel):
     name: str = Field(..., description="Name of the exercise.")
@@ -46,7 +46,7 @@ class AnalysisResult(BaseModel):
     timeline_events: List[VideoEvent]
     annotated_video_filename: str
 
-# --- 2. Meta-Analysis (Weekly Report) Schemas ---
+# Weekly Report Schemas ---
 
 class BodyPartSummary(BaseModel):
     arms_analysis: str = Field(..., description="Summary of arm stability, strength, and form trends.")
@@ -59,12 +59,10 @@ class FutureRecommendation(BaseModel):
     expected_benefit: str
 
 class WeeklyReport(BaseModel):
-    # This is the field your runner was missing!
     body_part_breakdown: BodyPartSummary
     
     recommended_plan: List[FutureRecommendation]
-    
-    # Hard Stats
+
     current_streak_days: int
     total_exercises_completed: int
     best_workout_id: str

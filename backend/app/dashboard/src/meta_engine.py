@@ -6,15 +6,15 @@ from datetime import datetime, timedelta
 from typing import List, Dict
 from .schemas import WeeklyReport
 
-# 1. Load Env vars IMMEDIATELY
+# Load Env vars
 load_dotenv() 
 
-# 2. Check for Key
+# Check for Key
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY is missing. Check .env file.")
 
-# 3. Setup Client
+# Setup Client
 client = instructor.from_openai(
     OpenAI(
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -54,19 +54,17 @@ def generate_weekly_report(past_sessions: List[dict]) -> WeeklyReport:
     """
     Takes a list of raw JSON DB entries and generates a Meta-Analysis.
     """
+
+    print("Computing stats")
     
-    # --- PHASE 1: PYTHON MATH (Hard Stats) ---
-    print("Computing hard stats...")
-    
-    # 1. Total Exercises
+    # Count total exercises
     total_exercises = len(past_sessions)
     
-    # 2. Streak Calculation
-    # Safely get dates, defaulting to today if missing
+    # Calculate Streak
     dates = [s.get('created_at', '2024-01-01')[:10] for s in past_sessions if 'created_at' in s]
     streak = calculate_streak(dates)
     
-    # 3. Find Best Workout (Highest Score)
+    # Find best workout (one with highest score)
     if not past_sessions:
         best_id = "N/A"
         best_score = 0
@@ -75,8 +73,7 @@ def generate_weekly_report(past_sessions: List[dict]) -> WeeklyReport:
         best_id = best_session.get('session_id', 'Unknown')
         best_score = best_session.get('form_score', 0)
 
-    # --- PHASE 2: AI SYNTHESIS (Qualitative) ---
-    print("Generating AI strategic insights...")
+    print("Passing through LLM")
     
     context_text = f"""
     HISTORY SUMMARY:

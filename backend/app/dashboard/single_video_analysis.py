@@ -34,10 +34,9 @@ def main(user_video_path):
     print(f"Analysis Complete, saved to {final_analysis}")
     print(f"Diagnosed Skill Level: {analysis_result.user_skill_level}")
     
-    # --- NEW: RUN VIDEO RENDERER ---
     
     # Define paths
-    # Note: If 'input_video.mp4' doesn't exist, it will create a black video test.
+    # If no input video, create a black video test.
     raw_video = user_video_path 
 
     base_dir = os.path.dirname(os.path.abspath(__file__))

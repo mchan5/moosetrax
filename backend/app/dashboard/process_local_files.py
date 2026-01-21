@@ -1,14 +1,11 @@
 import json 
 import os 
 from dotenv import load_dotenv 
-# Ensure these imports match your folder structure (dashboard/src)
 from dashboard.src.csv_parser import parse_rep_data
 from dashboard.src.llm_engine_process import generate_rep_analysis_json
 
 load_dotenv() 
 
-# --- PATHS ---
-# Adjust these absolute paths if you move folders
 # dir_path = os.path.dirname(os.path.abspath(__file__))
 # CSV_PATH = os.path.join(dir_path, "pose_outputs", "user_comparison.csv")
 # TXT_PATH = os.path.join(dir_path, "pose_outputs", "final_summary.txt")
@@ -38,7 +35,7 @@ def main():
     print(f"Parsed {len(rep_summaries)} repetitions.")
     # print(f"DEBUG: Data being sent to AI: {json.dumps(rep_summaries, indent=2)}") 
 
-    # 2. Load Cue Bank
+    # Load Cue Bank
     cue_bank = []
     if os.path.exists(CUE_BANK_PATH):
         try:
@@ -50,16 +47,13 @@ def main():
     else:
         print(f"Warning: Cue Bank file not found at {CUE_BANK_PATH}")
 
-    # 3. Generate Analysis with AI
+    # Generate Analysis with AI
     try: 
-        # --- UPDATED CALL: Passing both data AND cue_bank ---
         final_analysis = generate_rep_analysis_json(rep_summaries, cue_bank)
-        
-        # Inject standard metadata
         final_analysis.video_id = "user_test_session_01"
         final_analysis.fps = 30
         
-        # 4. Save to File
+        # Save to File
         with open(OUTPUT_JSON_PATH, "w") as f:
             f.write(final_analysis.model_dump_json(indent=2))
             

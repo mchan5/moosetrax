@@ -18,16 +18,15 @@ def draw_overlay(frame, text, color_name):
     """
     h, w, _ = frame.shape
     
-    # 1. Setup Font
     font = cv2.FONT_HERSHEY_SIMPLEX
     scale = 1.0  # Adjust based on video resolution (1.0 is good for 720p)
     thickness = 2
     margin = 10
     
-    # 2. Measure Text Size
+    # Configure text size
     (text_w, text_h), baseline = cv2.getTextSize(text, font, scale, thickness)
     
-    # 3. Calculate Coordinates (Bottom Center)
+    # Calculate Coordinates (Bottom Center)
     x = (w - text_w) // 2
     y = h - 50  # 50 pixels from bottom
     
@@ -38,23 +37,23 @@ def draw_overlay(frame, text, color_name):
     # Draw filled rectangle
     cv2.rectangle(frame, box_p1, box_p2, COLORS["black"], -1)
     
-    # Optional: Draw colored border
+    # Add coloured border 
     border_color = COLORS.get(color_name, COLORS["white"])
     cv2.rectangle(frame, box_p1, box_p2, border_color, 2)
 
-    # 5. Draw Text
+    # Draw Text
     cv2.putText(frame, text, (x, y), font, scale, COLORS["white"], thickness, cv2.LINE_AA)
 
 def render_video(video_path, json_path, output_path):
     print(f"[VIDEO] Processing: {video_path}")
     
-    # 1. Load Data
+    # Load Data
     with open(json_path, "r") as f:
         analysis_data = json.load(f)
     
     events = analysis_data.get("timeline_events", [])
     
-    # 2. UX Fix: Extend short events to minimum 2.0 seconds
+    # 2. Extend short events to minimum 4 seconds
     for event in events:
         duration = event["end_time"] - event["start_time"]
         if duration < 4.0:
@@ -74,7 +73,6 @@ def render_video(video_path, json_path, output_path):
         fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # 4. Setup Video Writer
     # Use avc1 (H.264) codec for better browser compatibility
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
@@ -105,9 +103,6 @@ def render_video(video_path, json_path, output_path):
         if active_event:
             draw_overlay(frame, active_event["overlay_text"], active_event["status_color"])
             
-            # (Optional) Draw Timestamp for debugging
-            # cv2.putText(frame, f"Time: {current_time:.1f}s", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-
         # Write Frame
         out.write(frame)
         frame_idx += 1
